@@ -6,12 +6,11 @@ import pkg from 'pg';
 
 const { Pool } = pkg;
 
-// SSH & DB Config (Hardcoded)
 const sshConfig = {
-  host: '69.62.84.28',
-  port: 22,
-  username: 'root',
-  password: 'Eltrive@0011',
+  host: process.env.SSH_HOST,
+  port: parseInt(process.env.SSH_PORT),
+  username: process.env.SSH_USER,
+  password: process.env.SSH_PASS,
   keepaliveInterval: 10000,
   keepaliveCountMax: 5,
   readyTimeout: 20000
@@ -19,17 +18,17 @@ const sshConfig = {
 
 const tunnelConfig = {
   localHost: '127.0.0.1',
-  localPort: 55432,
-  remoteHost: '127.0.0.1',
-  remotePort: 5432
+  localPort: 55432, // this should match DB_PORT (local)
+  remoteHost: process.env.DB_HOST,
+  remotePort: parseInt(process.env.DB_PORT)
 };
 
 const dbConfig = {
-  user: 'postgres',
-  host: '127.0.0.1',
-  database: 'vts_data',
-  password: 'Eltrive@0011',
-  port: 55432
+  user: process.env.DB_USER,
+  host: tunnelConfig.localHost,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASS,
+  port: tunnelConfig.localPort
 };
 
 const app = express();
@@ -40,9 +39,6 @@ let conn = null;
 let localServer = null;
 let pool = null;
 
-/**
- * Create SSH tunnel with auto-reconnection
- */
 function startTunnel() {
   return new Promise((resolve, reject) => {
     if (localServer) {
@@ -97,9 +93,6 @@ function startTunnel() {
   });
 }
 
-/**
- * Create Postgres connection pool
- */
 async function createPool() {
   if (pool) {
     console.log('✅ Closing old Postgres pool...');
@@ -125,9 +118,6 @@ async function createPool() {
   });
 }
 
-/**
- * Initialize backend
- */
 async function startServer() {
   try {
     await startTunnel();
@@ -161,7 +151,7 @@ async function startServer() {
       }
     });
 
-    const PORT = 3001;
+    const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
       console.log(`🚀 Backend live at http://localhost:${PORT}`);
     });
