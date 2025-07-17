@@ -1,4 +1,3 @@
-import 'dotenv/config'; // for local .env
 import express from 'express';
 import cors from 'cors';
 import { Client } from 'ssh2';
@@ -7,11 +6,12 @@ import pkg from 'pg';
 
 const { Pool } = pkg;
 
+// SSH & DB Config (Hardcoded)
 const sshConfig = {
-  host: process.env.SSH_HOST,
-  port: parseInt(process.env.SSH_PORT),
-  username: process.env.SSH_USER,
-  password: process.env.SSH_PASS,
+  host: '69.62.84.28',
+  port: 22,
+  username: 'root',
+  password: 'Eltrive@0011',
   keepaliveInterval: 10000,
   keepaliveCountMax: 5,
   readyTimeout: 20000
@@ -19,17 +19,17 @@ const sshConfig = {
 
 const tunnelConfig = {
   localHost: '127.0.0.1',
-  localPort: parseInt(process.env.DB_PORT),  // usually 55432
-  remoteHost: process.env.REMOTE_HOST || '127.0.0.1',
+  localPort: 55432,
+  remoteHost: '127.0.0.1',
   remotePort: 5432
 };
 
 const dbConfig = {
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST || '127.0.0.1',
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASS,
-  port: tunnelConfig.localPort
+  user: 'postgres',
+  host: '127.0.0.1',
+  database: 'vts_data',
+  password: 'Eltrive@0011',
+  port: 55432
 };
 
 const app = express();
@@ -161,7 +161,7 @@ async function startServer() {
       }
     });
 
-    const PORT = process.env.PORT || 3001;
+    const PORT = 3001;
     app.listen(PORT, () => {
       console.log(`🚀 Backend live at http://localhost:${PORT}`);
     });
