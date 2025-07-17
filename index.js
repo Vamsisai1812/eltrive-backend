@@ -32,7 +32,10 @@ const dbConfig = {
 };
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://eltrive.in'
+}));
+
 app.use(express.json());
 
 let conn = null;
