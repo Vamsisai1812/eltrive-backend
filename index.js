@@ -33,8 +33,9 @@ const dbConfig = {
 
 const app = express();
 app.use(cors({
-  origin: 'https://eltrive.in'
+  origin: ['http://localhost:3000', 'https://track.eltrive.com', 'https://eltrive.in']
 }));
+
 
 app.use(express.json());
 
